@@ -1,47 +1,41 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
 using namespace std;
 
-struct TreeNode {
+struct Node {
   int val;
-  TreeNode *left, *right;
-  TreeNode(int x) : val(x), left(0), right(0) {}
+  Node *left, *right;
+  Node(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-TreeNode* build(vector<int>& pre, int& i, int l, int r, unordered_map<int, int>& idx) {
-  if (l > r) return 0;
-  int val = pre[i++];
-  TreeNode* root = new TreeNode(val);
-  int mid = idx[val];
-  root->left = build(pre, i, l, mid - 1, idx);
-  root->right = build(pre, i, mid + 1, r, idx);
-  return root;
-}
-
-TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-  unordered_map<int, int> idx;
-  for (int i = 0; i < inorder.size(); ++i) idx[inorder[i]] = i;
-  int i = 0;
-  return build(preorder, i, 0, inorder.size() - 1, idx);
-}
-
-void printIn(TreeNode* root) {
+void inorder(Node* root, vector<int>& res) {
   if (!root) return;
-  printIn(root->left);
-  cout << root->val << " ";
-  printIn(root->right);
+  inorder(root->left, res);
+  res.push_back(root->val);
+  inorder(root->right, res);
+}
+
+void preorder(Node* root, vector<int>& res) {
+  if (!root) return;
+  res.push_back(root->val);
+  preorder(root->left, res);
+  preorder(root->right, res);
 }
 
 int main() {
-  vector<int> preorder = {3, 9, 20, 15, 7};
-  vector<int> inorder = {9, 3, 15, 20, 7};
+  Node* root = new Node(1);
+  root->left = new Node(2);
+  root->right = new Node(3);
+  root->left->left = new Node(4);
+  root->left->right = new Node(5);
 
-  TreeNode* root = buildTree(preorder, inorder);
+  vector<int> in, pre;
+  inorder(root, in);
+  preorder(root, pre);
 
-  cout << "Inorder traversal of the constructed tree: ";
-  printIn(root);
+  cout << "Inorder: ";
+  for (int x : in) cout << x << " ";
+  cout << "\nPreorder: ";
+  for (int x : pre) cout << x << " ";
   cout << endl;
-
-  return 0;
 }
